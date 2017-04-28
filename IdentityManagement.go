@@ -210,8 +210,11 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 			return nil, errors.New("Incorrect number of arguments. Id and password are expected!");
 		}
 		id := args[0]
-		password := getHash(args[1])
+		
 		jsonPerson, err := stub.GetState(id)
+		if err != nil {
+			return nil, errors.New(string(jsonPerson));
+		}
 		return nil, errors.New(string(jsonPerson));
 	case "getPersonForRequestor":
 		if len(args) != 3 {
