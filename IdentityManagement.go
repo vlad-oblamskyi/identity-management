@@ -213,7 +213,7 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 		password := getHash(args[1])
 		jsonPerson, err := stub.GetState(id)
 		if err != nil {
-			return nil, errors.New("Error retrieving person's state!");
+			return nil, errors.New(string(jsonPerson));
 		}
 		var person Person
 		if err := json.Unmarshal(jsonPerson, &person); err != nil {
