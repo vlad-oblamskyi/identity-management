@@ -252,6 +252,9 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 		if err != nil {
 			return nil, errors.New("Error retrieving person's state!");
 		}
+		if jsonPerson == nil {
+			return nil, nil
+		}
 		var person Person
 		if err := json.Unmarshal(jsonPerson, &person); err != nil {
 			panic(err)
