@@ -274,7 +274,7 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 				Key: person.Data[i].Key,
 				Value: dataValue,
 				Approved: person.Data[i].Approved,
-				RequestSent: requestSent
+				RequestSent: requestSent,
 			}
 			secureDataEntries = append(secureDataEntries, secureDataEntry)
 		}
