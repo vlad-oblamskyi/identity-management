@@ -33,9 +33,10 @@ type PendingApproval struct {
 }
 
 type SecureDataEntry struct {
-	Key       string    `json:"key"`
-	Value     string    `json:"value"`
-	Approved  bool      `json:"approved"`
+	Key         string    `json:"key"`
+	Value       string    `json:"value"`
+	Approved    bool      `json:"approved"`
+	RequestSent bool      `json:"requestSent"`
 }
 
 type SecurePerson struct {
@@ -262,13 +263,18 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 		var secureDataEntries []SecureDataEntry
 		for i := 0; i < len(person.Data); i ++ {
 			var dataValue string
+			var requestSent bool
 			if (contains(person.Data[i].VisibilityList, requestorId)) {
 				dataValue = person.Data[i].Value
+			}
+			if (contains(person.Data[i].VisibilityRequests, requestorId)) {
+				requestSent = true
 			}
 			secureDataEntry := SecureDataEntry {
 				Key: person.Data[i].Key,
 				Value: dataValue,
 				Approved: person.Data[i].Approved,
+				RequestSent: requestSent
 			}
 			secureDataEntries = append(secureDataEntries, secureDataEntry)
 		}
