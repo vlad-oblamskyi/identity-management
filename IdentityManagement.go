@@ -73,6 +73,49 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 		stub.PutState(id, jsonPerson) 
 
 		return nil, nil
+	case "updateData":
+		if len(args) != 3 { 
+			return nil, errors.New("Incorrect number of arguments. Id, Password and Data entries are expected!");
+		}
+		id := args[0]
+		password := getHash(args[1])
+		var newData []DataEntry
+		if err := json.Unmarshal([]byte(args[2]), &newData); err != nil {
+			panic(err)
+		}
+		// get existing person
+		jsonPerson, err := stub.GetState(id)
+		if err != nil {
+			return nil, errors.New("Error retrieving person's state!");
+		}
+		var person Person
+		if err := json.Unmarshal(jsonPerson, &person); err != nil {
+			panic(err)
+		}
+		// update person's data
+		var newEntries
+		for i := 0; i < len(person.Data); i ++ {
+			for j := 0; j < len(newData); j++ {
+				if newData[i].Key == person.Data[i].Key {
+					person.Data[i].Approved = false
+					person.Data[i].Value = newData[i].Value;
+				}
+			}
+		}
+		// add new data fields
+		for i := 0; i < len(newData); i++ {
+			if !containsData(person.Data, newData[i]) {
+				person.Data = append(person.Data, newData[i]);
+			}
+		}
+		// marshal and update state
+		updatedJsonPerson, err := json.Marshal(person)
+		if err != nil { 
+			panic(err)
+		}
+		stub.PutState(id, updatedJsonPerson) 
+
+		return nil, nil
 	case "approve":
 		if len(args) != 2 {
 			return nil, errors.New("Incorrect number of arguments. Id and Data key are expected!");
@@ -339,6 +382,16 @@ func contains(s []string, e string) bool {
 	}
 	return false
 }
+
+func containsData(s []DataEntry, e DataEntry) bool {
+	for _, a := range s {
+		if a.Key == e.Key {
+			return true
+		}
+	}
+	return false
+}
+
 
 func main() {
 	err := shim.Start(new(IdentityManagement))
