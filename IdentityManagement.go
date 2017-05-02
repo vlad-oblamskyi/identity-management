@@ -92,6 +92,10 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 		if err := json.Unmarshal(jsonPerson, &person); err != nil {
 			panic(err)
 		}
+		// check password
+		if person.Password != password {
+			return nil, errors.New("Incorrect password provided!");
+		}
 		// update person's data
 		for i := 0; i < len(person.Data); i ++ {
 			for j := 0; j < len(newData); j++ {
