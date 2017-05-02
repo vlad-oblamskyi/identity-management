@@ -99,9 +99,9 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 		// update person's data
 		for i := 0; i < len(person.Data); i ++ {
 			for j := 0; j < len(newData); j++ {
-				if newData[i].Key == person.Data[i].Key {
+				if newData[j].Key == person.Data[i].Key {
 					person.Data[i].Approved = false
-					person.Data[i].Value = newData[i].Value;
+					person.Data[i].Value = newData[j].Value;
 				}
 			}
 		}
