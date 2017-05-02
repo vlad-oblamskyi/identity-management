@@ -210,7 +210,7 @@ func (t *IdentityManagement) Query(stub shim.ChaincodeStubInterface, function st
 		}
 		institution := args[0]
 
-		keysIter, err := stub.RangeQueryState("0", "999999999")
+		keysIter, err := stub.RangeQueryState("0", "zzzzzzzzzzzzzzzzzz")
 		if err != nil {
 			return nil, errors.New("Error accessing state!")
 		}
