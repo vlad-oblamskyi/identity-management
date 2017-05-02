@@ -93,7 +93,6 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 			panic(err)
 		}
 		// update person's data
-		var newEntries
 		for i := 0; i < len(person.Data); i ++ {
 			for j := 0; j < len(newData); j++ {
 				if newData[i].Key == person.Data[i].Key {
