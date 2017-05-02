@@ -115,7 +115,7 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 		if err := json.Unmarshal(jsonPerson, &person); err != nil {
 			panic(err)
 		}
-		for i := 0; i < len(person.Data); i ++ {
+		for i := 0; i < len(person.Data); i++ {
 			if dataKey == person.Data[i].Key {
 				person.Data[i].VisibilityRequests = append(person.Data[i].VisibilityRequests, requestorId)
 			}
@@ -143,9 +143,9 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 		if err := json.Unmarshal(jsonPerson, &person); err != nil {
 			panic(err)
 		}
-		for i := 0; i < len(person.Data); i ++ {
+		for i := 0; i < len(person.Data); i++ {
 			if dataKey == person.Data[i].Key {
-				person.Data[i].VisibilityList = append(person.Data[i].VisibilityRequests, requestorId)
+				person.Data[i].VisibilityList = append(person.Data[i].VisibilityList, requestorId)
 				newVisibilityRequests := person.Data[i].VisibilityRequests[:0]
 				for _, x := range person.Data[i].VisibilityRequests {
 					if x != requestorId {
@@ -153,6 +153,41 @@ func (t *IdentityManagement) Invoke(stub shim.ChaincodeStubInterface, function s
 					}
 				}
 				person.Data[i].VisibilityRequests = newVisibilityRequests
+			}
+		}
+		updatedJsonPerson, err := json.Marshal(person)
+		if err != nil {
+			panic(err)
+		}
+		stub.PutState(dataOwnerId, updatedJsonPerson)
+
+		return nil, nil
+	case "revokePermissionForData":
+		if len(args) != 3 {
+			return nil, errors.New("Incorrect number of arguments. Data owner Id, Requestor Id and Data key are expected!");
+		}
+		dataOwnerId := args[0]
+		requestorId := args[1]
+		dataKey := args[2]
+
+		jsonPerson, err := stub.GetState(dataOwnerId)
+		if err != nil {
+			return nil, errors.New("Error retrieving person's state!");
+		}
+		var person Person
+		if err := json.Unmarshal(jsonPerson, &person); err != nil {
+			panic(err)
+		}
+		for i := 0; i < len(person.Data); i++ {
+			if dataKey == person.Data[i].Key {
+				person.Data[i].VisibilityRequests = append(person.Data[i].VisibilityRequests, requestorId)
+				newVisibilityList := person.Data[i].VisibilityList[:0]
+				for _, x := range person.Data[i].VisibilityList {
+					if x != requestorId {
+						newVisibilityList = append(newVisibilityList, x)
+					}
+				}
+				person.Data[i].VisibilityList = newVisibilityList
 			}
 		}
 		updatedJsonPerson, err := json.Marshal(person)
